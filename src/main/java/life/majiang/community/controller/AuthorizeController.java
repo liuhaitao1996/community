@@ -3,6 +3,7 @@ package life.majiang.community.controller;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import life.majiang.community.dto.GithubUserDTO;
 import life.majiang.community.model.User;
 import life.majiang.community.provider.GithubProvider;
 import life.majiang.community.service.UserService;
+import life.majiang.community.utils.CookieUtils;
 
 @Controller
 public class AuthorizeController {
@@ -23,6 +25,11 @@ public class AuthorizeController {
 	 * 存入session的用户的属性名
 	 */
 	public static final String SESSION_USER_ATTR = "user";
+
+	/**
+	 * 存入cookie的用户的属性名
+	 */
+	public static final String COOKIE_TOKEN_ATTR = "token";	
 	
 	/**
 	 * 重定向到主页的请求，重定向controller的请求
@@ -55,7 +62,8 @@ public class AuthorizeController {
 	@GetMapping("/callback")
 	public String callback(@RequestParam(name = "code") String code, 
 			               @RequestParam(name = "state") String state,
-			               HttpServletRequest request) {
+			               HttpServletRequest request,
+			               HttpServletResponse response) {
 		
 		// 1.https://github.com/login/oauth/authorize return code&state
 		
@@ -78,22 +86,21 @@ public class AuthorizeController {
 		// 5.write session and cookie
 		if(githubUser != null) {
 			// success
-			// 1.创建用户
+			
 			User user = new User();
-			user.setToken(UUID.randomUUID().toString());
+			String token = UUID.randomUUID().toString();
+			user.setToken(token);
 			user.setName(githubUser.getLogin());
 			user.setAccountId(githubUser.getId().toString());
 			user.setGmtCreate(System.currentTimeMillis());
 			user.setGmtModified(System.currentTimeMillis());
-			// 2. 插入用户
+			
 			userService.insert(user);
-			// 3. 将用户传入前台
-			request.getSession().setAttribute(SESSION_USER_ATTR, user);
-		}
+			CookieUtils.addCookie(COOKIE_TOKEN_ATTR, token);
 		
+		}
 		// 6.redirect:/
 		return INDEX_REQUEST;
-		
 		
 	}
 

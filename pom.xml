@@ -84,7 +84,13 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
-		</dependency>				
+		</dependency>	
+		
+        <dependency>
+    		<groupId>org.apache.commons</groupId>
+    		<artifactId>commons-lang3</artifactId>
+    		<version>3.9</version>
+		</dependency>					
 	</dependencies>
 
 	<build>

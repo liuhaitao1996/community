@@ -11,10 +11,12 @@ public class UserService {
 	@Autowired
 	private UserMapper userMapper;
 	
-	public void insert(User user) {
-		
+	public void insert(User user) {	
 		userMapper.insert(user);
-		
+	}
+
+	public User findUserByToken(String token) {
+		return userMapper.findUserByToken(token);
 	}
 
 }
