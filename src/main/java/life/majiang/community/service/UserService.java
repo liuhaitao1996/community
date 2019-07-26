@@ -8,7 +8,6 @@ import life.majiang.community.model.User;
 @Service
 public class UserService {
 
-	
 	@Autowired
 	private UserMapper userMapper;
 	
